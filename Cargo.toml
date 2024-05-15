@@ -1,6 +1,6 @@
 [package]
 name = "leptab"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["kodecraft-mark"]
 edition = "2021"
 description = "A data table for leptos with back end support, styled by tailwindcss"

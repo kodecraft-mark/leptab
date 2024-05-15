@@ -301,7 +301,8 @@ pub fn TablePagination(
     let previous_disabled = move || current_page.get() == 1;
     let aggregated_button = move || {
         // let mut buttons = vec![];
-        let total_page = total.get() / limit.get();
+        let page_count = total.get() / limit.get();
+        let total_page = if total.get() % limit.get() != 0 {page_count + 1} else {page_count};
         generate_button_numbers(current_page.get(), total_page)
         // for i in 1..=total_page {
         //     buttons.push(i);
