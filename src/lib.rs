@@ -13,7 +13,7 @@ use serde_json::Value;
 /// * `data` - data to display in the table
 /// * `offset` - data offset for pagination
 /// * `search` - search string
-/// * `sort` - sort ascending (fdlse), descending (true)
+/// * `sort` - sort ascending (false), descending (true)
 /// * `sort_by` - sort by column name
 /// * `limit` - number of rows to display per page
 /// * `total` - total number of rows
@@ -288,7 +288,7 @@ fn TableRow(sort_by: RwSignal<String>, header: RwSignal<TableHeader>, sort: RwSi
 /// 
 /// * `total` - Total number of rows in the table
 /// * `limit` - Number of rows to display per page
-/// * `offset` - The current offset of the table (start with 0)
+/// * `offset` - The current offset of the table
 /// * `current_page` - The current page number
 #[allow(non_snake_case)]
 #[component]
@@ -300,15 +300,16 @@ pub fn TablePagination(
 ) -> impl IntoView {
     let previous_disabled = move || current_page.get() == 1;
     let aggregated_button = move || {
-        let mut buttons = vec![];
+        // let mut buttons = vec![];
         let total_page = total.get() / limit.get();
-        for i in 1..=total_page {
-            buttons.push(i);
-        }
-        if total.get() % limit.get() != 0 {
-            buttons.push(total_page + 1);
-        }
-        buttons
+        generate_button_numbers(current_page.get(), total_page)
+        // for i in 1..=total_page {
+        //     buttons.push(i);
+        // }
+        // if total.get() % limit.get() != 0 {
+        //     buttons.push(total_page + 1);
+        // }
+        // buttons
     };
     let row_from = move || offset.get() + 1;
     let row_to = move || {
@@ -452,5 +453,22 @@ pub fn DownloadCsvAnchor(
             </button>
         </div>
     }
+}
+
+
+
+/// Fix maximum button number to 5
+fn generate_button_numbers(current_page: u32, total_page: u32) -> Vec<u32> {
+    if total_page <= 5 {
+        return (1..=total_page).collect();
+    }
+    let start = if current_page <= 3 {
+        1
+    } else if (current_page + 2) <= total_page {
+        current_page - 2
+    } else {
+        total_page - 4
+    };
+    (start..=start + 4.min(total_page - start)).collect()
 }
 

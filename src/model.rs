@@ -1,21 +1,20 @@
 use serde_json::Value;
 use serde::{Deserialize, Serialize};
 
-// #[derive(Debug, Serialize, Deserialize, Clone, Default)]
-// pub struct CollectionCountResponse {
-//     data: Vec<CollectionCount>,
-// }
-
-// #[derive(Debug, Serialize, Deserialize, Clone, Default)]
-// pub struct CollectionCount {
-//     pub count: String,
-// }
-
-// impl CollectionCountResponse {
-//     pub fn get_count(&self) -> u32 {
-//         self.data.first().unwrap().count.parse::<u32>().unwrap_or_default()
-//     }
-// }
+/// A struct representing a table header with extra data
+/// 
+/// # Arguments
+/// 
+/// * `name` - The name of the column in the JSON
+/// * `sort_name` - The name of the column to sort by (can be the name of the column in database to be use in sorting)
+/// * `display_name` - The name of the column to display in the table
+/// * `is_currency` - A boolean to check if the column is a currency (if true you can append a certain column of currency)
+/// * `currency` - The name of the column of a currency
+/// * `is_number_styled` - A boolean to check if the column is a number (if true style is "text-success" else "text-error")
+/// * `default_value` - use this if the data is not parseable
+/// * `style_when_success` - Add "text-success" to this column if the value is equals to this value
+/// * `style_when_error` - Add "text-error" to this column if the value is equals to this value
+/// * `to_uppercase` - A boolean to check if the column is a string (if true the value will be converted to uppercase)
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct TableHeader {
@@ -73,6 +72,13 @@ impl TableHeader {
     }
 }
 
+/// A struct for CSV download
+/// 
+/// # Arguments
+/// 
+/// * `is_allowed` - A boolean to check if the download is allowed
+/// * `file_name` - The name of the file to be downloaded
+/// * `file_content` - The content of the file to be downloaded
 #[derive(Debug, Clone, Default)]
 pub struct DataDownload {
     pub is_allowed: bool,
