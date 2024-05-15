@@ -44,6 +44,7 @@ pub fn DataTable(
                         on:change=move |e| {
                             let val = event_target_value(&e).parse::<u32>().unwrap();
                             limit.set(val);
+                            offset.set((current_page.get() - 1) * limit.get())
                         }
                     >
 
@@ -312,6 +313,14 @@ pub fn TablePagination(
         // }
         // buttons
     };
+    let total_page_count = move || {
+        let page_count = total.get() / limit.get();
+        if total.get() % limit.get() != 0 {
+            page_count + 1
+        } else {
+            page_count
+        }
+    };
     let row_from = move || offset.get() + 1;
     let row_to = move || {
         let r = row_from() + limit.get() - 1;
@@ -323,7 +332,7 @@ pub fn TablePagination(
     };
 
     let show_pagination = move || limit.get() < total.get();
-    let next_disabled = move || current_page.get() == (aggregated_button().len() as u32);
+    let next_disabled = move || current_page.get() == total_page_count();
     
     view! {
         <div class="flex justify-between w-full">
