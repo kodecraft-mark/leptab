@@ -87,11 +87,11 @@ pub struct DataDownload {
 }
 
 impl DataDownload {
-    pub fn new(is_allowed: bool, file_name: &str, file_content: &str) -> Self {
+    pub fn new(is_allowed: bool, file_name: &str, file_content: String) -> Self {
         Self {
             is_allowed,
             file_name: file_name.to_string(),
-            file_content: file_content.to_string(),
+            file_content
         }
     }
 }
