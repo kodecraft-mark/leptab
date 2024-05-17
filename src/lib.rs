@@ -32,6 +32,7 @@ pub fn DataTable(
     total: RwSignal<u32>,
     current_page: RwSignal<u32>,
     download: RwSignal<DataDownload>,
+    download_action: Action<(),()>
 ) -> impl IntoView {
     let pages_entries = RwSignal::new(vec![5, 10, 15, 20, 25, 50, 100]);
     view! {
@@ -74,6 +75,7 @@ pub fn DataTable(
                                     <DownloadCsvAnchor
                                         content=download.get().file_content
                                         file_name=download.get().file_name
+                                        download_action=download_action
                                     />
                                 }
                             }
@@ -400,6 +402,7 @@ pub fn TablePagination(
 pub fn DownloadCsvAnchor(
     content: String,
     file_name: String,
+    download_action: Action<(), ()>,
     #[prop(optional)] button_name: String,
 ) -> impl IntoView {
     use wasm_bindgen::JsValue;
@@ -418,6 +421,7 @@ pub fn DownloadCsvAnchor(
         false => String::from("Download"),
     };
     let download = move || {
+        download_action.dispatch(());
         let uint8arr = Uint8Array::new(&unsafe { Uint8Array::view(&content.as_bytes()) }.into());
         let array = Array::new();
         array.push(&uint8arr.buffer());
@@ -437,6 +441,7 @@ pub fn DownloadCsvAnchor(
         hyperlink.click();
         hyperlink.remove();
     };
+    // let action_pending = download_action.pending();
     view! {
         <div>
             <button
