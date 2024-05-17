@@ -441,11 +441,12 @@ pub fn DownloadCsvAnchor(
         hyperlink.click();
         hyperlink.remove();
     };
-    // let action_pending = download_action.pending();
+    let action_pending = download_action.pending();
     view! {
         <div>
             <button
                 class="font-normal btn btn-sm btn-ghost bg-base-100 rounded-sm"
+                prop:disabled = move || action_pending.get()
                 on:click=move |_| download()
             >
                 <div class="flex gap-2 justify-normal text-center items-center content-center">
