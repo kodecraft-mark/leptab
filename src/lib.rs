@@ -41,7 +41,7 @@ pub fn DataTable(
     view! {
         <div class="p-1">
             <div class="flex justify-between my-2">
-                <div class="flex flex-auto justify-start gap-1">
+                <div class="flex flex-auto justify-start gap-2 items-center">
                     <select
                         class="text-xs border-gray-800 rounded shadow-md select-sm hover:shadow-sm hover:shadow-success bg-base-100"
                         name="row_slice"
@@ -72,7 +72,7 @@ pub fn DataTable(
                     </select>
                     <div>
                     <Suspense
-                        fallback = move || view! {<div class = "flex justify start gap-1 items-center"><span class = "loading loading-spinner loading-xs"></span><span class = "text-xs/3 opacity-50">"Preparing download file ..."</span></div>}
+                        fallback = move || view! {<div class = "flex justify start gap-1 items-center"><span class = "loading loading-spinner loading-xs"></span><span class = "text-xs/3 opacity-50 font-extralight">"Preparing download file ..."</span></div>}
                     >
                     {
                         move || {
