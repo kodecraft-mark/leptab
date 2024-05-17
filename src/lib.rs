@@ -43,7 +43,7 @@ pub fn DataTable(
             <div class="flex justify-between my-2">
                 <div class="flex flex-auto justify-start gap-2 items-center">
                     <select
-                        class="text-xs border-gray-800 rounded shadow-md select-sm hover:shadow-sm hover:shadow-success bg-base-100"
+                        class="text-xs border-gray-800 rounded shadow-md select-xs hover:shadow-sm hover:shadow-success bg-base-100"
                         name="row_slice"
                         on:change=move |e| {
                             let val = event_target_value(&e).parse::<u32>().unwrap();
@@ -70,9 +70,8 @@ pub fn DataTable(
                         }}
 
                     </select>
-                    <div>
                     <Suspense
-                        fallback = move || view! {<div class = "flex justify start gap-1 items-center"><span class = "loading loading-spinner loading-xs"></span><span class = "text-xs/3 opacity-50 font-extralight">"Preparing download file ..."</span></div>}
+                        fallback = move || view! {<div class = "flex justify start gap-2 items-center"><span class = "loading loading-spinner loading-xs"></span><span class = "text-xs opacity-50 font-extralight">"Loading File"</span></div>}
                     >
                     {
                         move || {
@@ -93,14 +92,13 @@ pub fn DataTable(
                         }
                     }
                     </Suspense>
-                    </div>
                 </div>
                 <div class="flex flex-auto justify-end gap-1">
                     <div class = "flex gap-1 items-center">
-                        <span class="text-sm font-light">"Search : "</span>
+                        <span class="text-xs font-light">"Search : "</span>
                         <input
                             type="text"
-                            class="input input-sm input-info focus:outline-none focus:shadow-outline"
+                            class="input input-xs rounded input-info focus:outline-none focus:shadow-outline"
                             placeholder=""
                             prop:value=search
                             on:blur=move |event| {
@@ -428,7 +426,7 @@ pub fn DownloadCsvAnchor(
     };
     let button_placeholder = move || match button_name.len() > 0 {
         true => button_name,
-        false => String::from("Download"),
+        false => String::from("CSV"),
     };
     let download = move || {
         let uint8arr = Uint8Array::new(&unsafe { Uint8Array::view(&content.as_bytes()) }.into());
@@ -451,30 +449,28 @@ pub fn DownloadCsvAnchor(
         hyperlink.remove();
     };
     view! {
-        <div>
-            <button
-                class="font-normal btn btn-sm btn-ghost bg-base-100 rounded-sm"
-                on:click=move |_| download()
-            >
-                <div class="flex gap-2 justify-normal text-center items-center content-center">
-                    <span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            class="w-4 h-4"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M4.5 2A1.5 1.5 0 003 3.5v13A1.5 1.5 0 004.5 18h11a1.5 1.5 0 001.5-1.5V7.621a1.5 1.5 0 00-.44-1.06l-4.12-4.122A1.5 1.5 0 0011.378 2H4.5zm4.75 6.75a.75.75 0 011.5 0v2.546l.943-1.048a.75.75 0 011.114 1.004l-2.25 2.5a.75.75 0 01-1.114 0l-2.25-2.5a.75.75 0 111.114-1.004l.943 1.048V8.75z"
-                                clip-rule="evenodd"
-                            ></path>
-                        </svg>
-                    </span>
-                    <span class="font-extralight">{button_placeholder()}</span>
-                </div>
-            </button>
-        </div>
+        <button
+            class="font-normal btn btn-xs btn-ghost bg-base-100 rounded text-xs"
+            on:click=move |_| download()
+        >
+            <div class="flex gap-2 justify-normal text-center items-center content-center">
+                <span>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        class="w-3 h-3"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M4.5 2A1.5 1.5 0 003 3.5v13A1.5 1.5 0 004.5 18h11a1.5 1.5 0 001.5-1.5V7.621a1.5 1.5 0 00-.44-1.06l-4.12-4.122A1.5 1.5 0 0011.378 2H4.5zm4.75 6.75a.75.75 0 011.5 0v2.546l.943-1.048a.75.75 0 011.114 1.004l-2.25 2.5a.75.75 0 01-1.114 0l-2.25-2.5a.75.75 0 111.114-1.004l.943 1.048V8.75z"
+                            clip-rule="evenodd"
+                        ></path>
+                    </svg>
+                </span>
+                <span class="font-extralight">{button_placeholder()}</span>
+            </div>
+        </button>
     }
 }
 
