@@ -66,7 +66,18 @@ pub fn ExampleTable() -> impl IntoView {
             .expect("Failed to serialize to JSON")
     });
 	//If you want a download then add it here
-    let download = RwSignal::new(DataDownload::new(true, "file_name", "some content here, just use some derive signal to convert your data to CSV formatted string"));
+    let download_data_request = Signal::derive(move || {
+        DownloadDataRequest {
+            table_name: "trade".to_string(),
+            filter: filter.get(),
+            fields: fields.get(),
+            search: search.get(),
+        }
+    });
+    //Create a download resource, with DownloadDataRequest as request parameter
+    let download_resource: Resource<DownloadDataRequest, Result<String, ServerFnError>> = create_local_resource(move || (download_data_request.get()), move |d| get_collection_file::<UserProfitResponse>(d));
+    let allow_download = RwSignal::new(true);
+    let download_filename = RwSignal::new("user_profit_file".to_string());
 	
 	//Current page number
     let current_page = RwSignal::new(1u32);
@@ -98,7 +109,9 @@ pub fn ExampleTable() -> impl IntoView {
                                         limit = limit 
                                         total = data_count 
                                         current_page = current_page
-                                        download = download
+                                        allow_download = allow_download
+                                        download_filename = download_filename
+                                        download_resource = download_resource
                                     />
                                 }
                             })

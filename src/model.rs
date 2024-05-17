@@ -72,29 +72,14 @@ impl TableHeader {
     }
 }
 
-/// A struct for CSV download
+/// A struct for download data request, using parameters that are common, implementation is base on user
 /// 
 /// # Arguments
 /// 
-/// * `is_allowed` - A boolean to check if the download is allowed
-/// * `file_name` - The name of the file to be downloaded
-/// * `file_content` - The content of the file to be downloaded
-#[derive(Debug, Clone, Default)]
-pub struct DataDownload {
-    pub is_allowed: bool,
-    pub file_name: String,
-    pub file_content: String,
-}
-
-impl DataDownload {
-    pub fn new(is_allowed: bool, file_name: &str, file_content: String) -> Self {
-        Self {
-            is_allowed,
-            file_name: file_name.to_string(),
-            file_content
-        }
-    }
-}
+/// * `table_name` - The name of the table to be downloaded
+/// * `filter` - The filter to be used in downloading
+/// * `fields` - The fields to be downloaded
+/// * `search` - The search to be used in downloading
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct DownloadDataRequest {
     pub table_name: String,

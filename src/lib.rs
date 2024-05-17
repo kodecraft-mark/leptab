@@ -18,7 +18,9 @@ use serde_json::Value;
 /// * `limit` - number of rows to display per page
 /// * `total` - total number of rows
 /// * `current_page` - current page number
-/// * `download` - download data
+/// * `allow_download` - allow download of the table data
+/// * `download_filename` - filename for the downloaded file
+/// * `download_resource` - resource for downloading the data
 #[allow(non_snake_case)]
 #[component]
 pub fn DataTable(
@@ -38,7 +40,7 @@ pub fn DataTable(
     let pages_entries = RwSignal::new(vec![5, 10, 15, 20, 25, 50, 100]);
     view! {
         <div class="p-1">
-            <div class="flex justify-between">
+            <div class="flex justify-between mb-1">
                 <div class="flex flex-auto justify-start gap-1">
                     <select
                         class="text-xs border-gray-800 rounded shadow-md select-sm hover:shadow-sm hover:shadow-success bg-base-100"
@@ -70,7 +72,7 @@ pub fn DataTable(
                     </select>
                     <div>
                     <Suspense
-                        fallback = move || view! {<button class="font-normal btn btn-sm btn-ghost bg-base-100 rounded-sm"><span class = "loading loading-spinner loading-xs"></span></button>}
+                        fallback = move || view! {<div class = "flex justify start gap-1"><span class = "loading loading-spinner loading-xs"></span><span class = "text-xs/3 opacity-50">"Preparing download file ..."</span></div>}
                     >
                     {
                         move || {
@@ -92,30 +94,13 @@ pub fn DataTable(
                     }
                     </Suspense>
                     </div>
-                    // {move || {
-                    //     match download.get().is_allowed {
-                    //         true => {
-                    //             download_resource.and_then(|d| {
-
-                    //             })
-                    //             view! {
-                    //                 <DownloadCsvAnchor
-                    //                     content=download.get().file_content
-                    //                     file_name=download.get().file_name
-                    //                 />
-                    //             }
-                    //         }
-                    //         false => view! {}.into_view(),
-                    //     }
-                    // }}
-
                 </div>
                 <div class="flex flex-auto justify-end gap-1 join">
-                    <div>
-                        <span class="text-sm font-light">Search:</span>
+                    <div class = "flex gap-1">
+                        <span class="text-sm font-light">"Search : "</span>
                         <input
                             type="text"
-                            class="input input-sm input-info focus:outline-none focus:shadow-outline "
+                            class="input input-sm input-info focus:outline-none focus:shadow-outline"
                             placeholder=""
                             prop:value=search
                             on:blur=move |event| {
@@ -218,7 +203,7 @@ pub fn DataTable(
                                                                                 {match header.is_currency {
                                                                                     true => {
                                                                                         view! {
-                                                                                            <span class="text-xs opacity-50">
+                                                                                            <span class="text-xs opacity-50 text-xs/3">
                                                                                                 {format!(" {}", header.find_currency(&value))}
                                                                                             </span>
                                                                                         }
