@@ -95,3 +95,10 @@ impl DataDownload {
         }
     }
 }
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DownloadDataRequest {
+    pub table_name: String,
+    pub filter: String,
+    pub fields: String,
+    pub search: String,
+}

@@ -31,8 +31,9 @@ pub fn DataTable(
     limit: RwSignal<u32>,
     total: RwSignal<u32>,
     current_page: RwSignal<u32>,
-    download: RwSignal<DataDownload>,
-    download_action: Action<(),()>
+    allow_download: RwSignal<bool>,
+    download_filename: RwSignal<String>,
+    download_resource: Resource<DownloadDataRequest, Result<String, ServerFnError>>
 ) -> impl IntoView {
     let pages_entries = RwSignal::new(vec![5, 10, 15, 20, 25, 50, 100]);
     view! {
@@ -67,21 +68,46 @@ pub fn DataTable(
                         }}
 
                     </select>
-
-                    {move || {
-                        match download.get().is_allowed {
-                            true => {
-                                view! {
-                                    <DownloadCsvAnchor
-                                        content=download.get().file_content
-                                        file_name=download.get().file_name
-                                        download_action=download_action
-                                    />
+                    <div>
+                    <Suspense
+                        fallback = move || view! {<button class="font-normal btn btn-sm btn-ghost bg-base-100 rounded-sm"><span class = "loading loading-spinner loading-xs"></span></button>}
+                    >
+                    {
+                        move || {
+                            download_resource.and_then(|d| {
+                                match allow_download.get() {
+                                    true => {
+                                        view! {
+                                            <DownloadCsvAnchor
+                                                content=d.clone()
+                                                file_name=download_filename.get()
+                                            />
+                                        }
+                                    }
+                                    false => view! {}.into_view(),
                                 }
-                            }
-                            false => view! {}.into_view(),
+                            
+                            })
                         }
-                    }}
+                    }
+                    </Suspense>
+                    </div>
+                    // {move || {
+                    //     match download.get().is_allowed {
+                    //         true => {
+                    //             download_resource.and_then(|d| {
+
+                    //             })
+                    //             view! {
+                    //                 <DownloadCsvAnchor
+                    //                     content=download.get().file_content
+                    //                     file_name=download.get().file_name
+                    //                 />
+                    //             }
+                    //         }
+                    //         false => view! {}.into_view(),
+                    //     }
+                    // }}
 
                 </div>
                 <div class="flex flex-auto justify-end gap-1 join">
@@ -402,7 +428,6 @@ pub fn TablePagination(
 pub fn DownloadCsvAnchor(
     content: String,
     file_name: String,
-    download_action: Action<(), ()>,
     #[prop(optional)] button_name: String,
 ) -> impl IntoView {
     use wasm_bindgen::JsValue;
@@ -421,10 +446,6 @@ pub fn DownloadCsvAnchor(
         false => String::from("Download"),
     };
     let download = move || {
-        download_action.dispatch(());
-        if download_action.pending().get() {
-            return;
-        }
         let uint8arr = Uint8Array::new(&unsafe { Uint8Array::view(&content.as_bytes()) }.into());
         let array = Array::new();
         array.push(&uint8arr.buffer());
@@ -444,12 +465,10 @@ pub fn DownloadCsvAnchor(
         hyperlink.click();
         hyperlink.remove();
     };
-    let action_pending = download_action.pending();
     view! {
         <div>
             <button
                 class="font-normal btn btn-sm btn-ghost bg-base-100 rounded-sm"
-                prop:disabled = move || action_pending.get()
                 on:click=move |_| download()
             >
                 <div class="flex gap-2 justify-normal text-center items-center content-center">
