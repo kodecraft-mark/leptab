@@ -40,7 +40,7 @@ pub fn DataTable(
     let pages_entries = RwSignal::new(vec![5, 10, 15, 20, 25, 50, 100]);
     view! {
         <div class="p-1">
-            <div class="flex justify-between mb-1">
+            <div class="flex justify-between my-2">
                 <div class="flex flex-auto justify-start gap-1">
                     <select
                         class="text-xs border-gray-800 rounded shadow-md select-sm hover:shadow-sm hover:shadow-success bg-base-100"
@@ -72,7 +72,7 @@ pub fn DataTable(
                     </select>
                     <div>
                     <Suspense
-                        fallback = move || view! {<div class = "flex justify start gap-1"><span class = "loading loading-spinner loading-xs"></span><span class = "text-xs/3 opacity-50">"Preparing download file ..."</span></div>}
+                        fallback = move || view! {<div class = "flex justify start gap-1 items-center"><span class = "loading loading-spinner loading-xs"></span><span class = "text-xs/3 opacity-50">"Preparing download file ..."</span></div>}
                     >
                     {
                         move || {
@@ -95,8 +95,8 @@ pub fn DataTable(
                     </Suspense>
                     </div>
                 </div>
-                <div class="flex flex-auto justify-end gap-1 join">
-                    <div class = "flex gap-1">
+                <div class="flex flex-auto justify-end gap-1">
+                    <div class = "flex gap-1 items-center">
                         <span class="text-sm font-light">"Search : "</span>
                         <input
                             type="text"
