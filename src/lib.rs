@@ -422,6 +422,9 @@ pub fn DownloadCsvAnchor(
     };
     let download = move || {
         download_action.dispatch(());
+        if download_action.pending().get() {
+            return;
+        }
         let uint8arr = Uint8Array::new(&unsafe { Uint8Array::view(&content.as_bytes()) }.into());
         let array = Array::new();
         array.push(&uint8arr.buffer());
