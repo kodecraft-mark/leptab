@@ -48,7 +48,8 @@ pub fn DataTable(
                         on:change=move |e| {
                             let val = event_target_value(&e).parse::<u32>().unwrap();
                             limit.set(val);
-                            offset.set((current_page.get() - 1) * limit.get())
+                            current_page.set(1);
+                            offset.set(0)
                         }
                     >
 
