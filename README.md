@@ -19,10 +19,12 @@ If you are using Leptos with tailwind, it can be a perfect match for your data t
 pub fn ExampleTable() -> impl IntoView {
 	//Create headers
     let headers = RwSignal::new(vec![
-        TableHeader::new("user_id", "user_id", "Id", false, "", false, "", "", "", false),
-        TableHeader::new("name", "name", "Name", false, "", false, "", "", "", false),
-        TableHeader::new("profit", "profit_amount", "Profit Amount", true, "profit_currency", true, "- -", "", "", false),
-        TableHeader::new("current_status", "current_status", "Status", false, "", false, "No movement", "Gain", "Loss", false),
+        TableHeader::new("user_id", "user_id", "Id", false, "", false, "", "", "", false, None),
+        TableHeader::new("name", "name", "Name", false, "", false, "", "", "", false, None),
+        TableHeader::new("profit", "profit_amount", "Profit Amount", true, "profit_currency", true, "- -", "", "", false, None),
+        //Use Prefix for something you want to add at the beginning, such as currency symbol
+        //TableHeader::new("profit", "profit_amount", "Profit Amount", false, "", false, "- -", "", "", false, Some("$".to_string())),
+        TableHeader::new("current_status", "current_status", "Status", false, "", false, "No movement", "Gain", "Loss", false. None),
     ]);
 	//Signal for sort, ascending is true, descending is false
     let sort = RwSignal::new(false);

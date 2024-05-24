@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 /// * `style_when_success` - Add "text-success" to this column if the value is equals to this value
 /// * `style_when_error` - Add "text-error" to this column if the value is equals to this value
 /// * `to_uppercase` - A boolean to check if the column is a string (if true the value will be converted to uppercase)
+/// * `prefix` - Optional string to be added before the value
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct TableHeader {
