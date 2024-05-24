@@ -161,7 +161,12 @@ pub fn DataTable(
                                                                     .map(|header| {
                                                                         view! {
                                                                             <td>
-
+                                                                                {
+                                                                                    match header.prefix {
+                                                                                        Some(ref p) => view! { <span class="text-xs opacity-50 text-xs/3">{format!("{} ", p)}</span> }.into_view(),
+                                                                                        None => view! {}.into_view()
+                                                                                    }
+                                                                                }
                                                                                 {
                                                                                     let number_style = match header
                                                                                         .find(&value)

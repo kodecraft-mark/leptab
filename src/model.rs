@@ -28,10 +28,11 @@ pub struct TableHeader {
     pub style_when_success: String,
     pub style_when_error: String,
     pub to_uppercase: bool,
+    pub prefix: Option<String>,
 }
 
 impl TableHeader {
-    pub fn new(name: &str, sort_name: &str, display_name: &str, is_currency: bool, currency: &str, is_number_styled: bool, default_value: &str, style_when_success: &str, style_when_error: &str, to_uppercase: bool) -> Self {
+    pub fn new(name: &str, sort_name: &str, display_name: &str, is_currency: bool, currency: &str, is_number_styled: bool, default_value: &str, style_when_success: &str, style_when_error: &str, to_uppercase: bool, prefix: Option<String>) -> Self {
         Self {
             name: name.to_string(),
             sort_name: sort_name.to_string(),
@@ -42,7 +43,8 @@ impl TableHeader {
             default_value: default_value.to_string(),
             style_when_success: style_when_success.to_string(),
             style_when_error: style_when_error.to_string(),
-            to_uppercase
+            to_uppercase,
+            prefix,
         }
     }
 
