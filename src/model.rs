@@ -63,10 +63,27 @@ impl TableHeader {
         }
     }
     pub fn find_currency(&self, json_value: &Value) -> String {
+        let is_default_or_no_value = match json_value.get(&self.name) {
+            Some(value) => {
+                match value {
+                    Value::String(s) => false,
+                    Value::Number(n) => false,
+                    Value::Bool(b) => false,
+                    _ => true,
+                }
+            },
+            None => true,
+        };
         match json_value.get(&self.currency) {
             Some(value) => {
                 match value {
-                    Value::String(s) => s.clone(),
+                    Value::String(s) => {
+                        if is_default_or_no_value {
+                            String::from("")
+                        } else {
+                            s.clone()
+                        }
+                    },
                     _ => String::from(""),
                 }
             },

@@ -74,24 +74,28 @@ pub fn DataTable(
                     <Suspense
                         fallback = move || view! {<div class = "flex justify start gap-2 items-center"><span class = "loading loading-spinner loading-xs"></span><span class = "text-xs opacity-50 font-extralight">"Loading File"</span></div>}
                     >
-                    {
-                        move || {
-                            download_resource.and_then(|d| {
-                                match allow_download.get() {
-                                    true => {
-                                        view! {
-                                            <DownloadCsvAnchor
-                                                content=d.clone()
-                                                file_name=download_filename.get()
-                                            />
+                        <ErrorBoundary
+                            fallback = move |_| view! {<div class = "flex justify start gap-2 items-center"><span class = "text-xs/3 text-error opacity-50 font-extralight">"Error Loading Download File"</span></div>}
+                        >
+                            {
+                                move || {
+                                    download_resource.and_then(|d| {
+                                        match allow_download.get() {
+                                            true => {
+                                                view! {
+                                                    <DownloadCsvAnchor
+                                                        content=d.clone()
+                                                        file_name=download_filename.get()
+                                                    />
+                                                }
+                                            }
+                                            false => view! {}.into_view(),
                                         }
-                                    }
-                                    false => view! {}.into_view(),
+                                    
+                                    })
                                 }
-                            
-                            })
-                        }
-                    }
+                            }
+                        </ErrorBoundary>
                     </Suspense>
                 </div>
                 <div class="flex flex-auto justify-end gap-1">
@@ -179,14 +183,14 @@ pub fn DataTable(
                                                                                     };
                                                                                     let style_when_success = match header
                                                                                         .find(&value)
-                                                                                        .to_uppercase() == header.style_when_success.to_uppercase()
+                                                                                        .to_uppercase().contains(&header.style_when_success.to_uppercase())
                                                                                     {
                                                                                         true => "text-success",
                                                                                         false => "",
                                                                                     };
                                                                                     let style_when_error = match header
                                                                                         .find(&value)
-                                                                                        .to_uppercase() == header.style_when_error.to_uppercase()
+                                                                                        .to_uppercase().contains(&header.style_when_success.to_uppercase())
                                                                                     {
                                                                                         true => "text-error",
                                                                                         false => "",
