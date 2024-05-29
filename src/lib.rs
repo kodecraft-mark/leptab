@@ -183,14 +183,14 @@ pub fn DataTable(
                                                                                     };
                                                                                     let style_when_success = match header
                                                                                         .find(&value)
-                                                                                        .to_uppercase().contains(&header.style_when_success.to_uppercase())
+                                                                                        .to_uppercase() == header.style_when_success.to_uppercase()
                                                                                     {
                                                                                         true => "text-success",
                                                                                         false => "",
                                                                                     };
                                                                                     let style_when_error = match header
                                                                                         .find(&value)
-                                                                                        .to_uppercase().contains(&header.style_when_success.to_uppercase())
+                                                                                        .to_uppercase() == header.style_when_error.to_uppercase()
                                                                                     {
                                                                                         true => "text-error",
                                                                                         false => "",
@@ -210,11 +210,17 @@ pub fn DataTable(
                                                                                 }
                                                                                 {match header.is_currency {
                                                                                     true => {
-                                                                                        view! {
-                                                                                            <span class="text-xs opacity-50 text-xs/3">
-                                                                                                {format!(" {}", header.find_currency(&value))}
-                                                                                            </span>
+                                                                                        let has_value = header.find(&value).parse::<f64>().is_ok();
+                                                                                        if has_value {
+                                                                                            view! {
+                                                                                                <span class="text-xs opacity-50 text-xs/3">
+                                                                                                    {format!(" {}", header.find_currency(&value))}
+                                                                                                </span>
+                                                                                            }
+                                                                                        }else{
+                                                                                            view! { <span></span> }
                                                                                         }
+                                                                                        
                                                                                     }
                                                                                     false => view! { <span></span> },
                                                                                 }}
