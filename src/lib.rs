@@ -183,7 +183,7 @@ pub fn DataTable(
                                                                                     };
                                                                                     let style_when_success = match header
                                                                                         .find(&value)
-                                                                                        .to_uppercase() == header.style_when_success.to_uppercase()
+                                                                                        .to_uppercase().contains(&header.style_when_success.to_uppercase())
                                                                                     {
                                                                                         true => "text-success",
                                                                                         false => "",
