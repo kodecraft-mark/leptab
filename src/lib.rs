@@ -183,14 +183,14 @@ pub fn DataTable(
                                                                                     };
                                                                                     let style_when_success = match header
                                                                                         .find(&value)
-                                                                                        .to_uppercase().contains(&header.style_when_success.to_uppercase())
+                                                                                        .to_uppercase().contains(&header.style_when_success.to_uppercase()) && !header.style_when_success.is_empty()
                                                                                     {
                                                                                         true => "text-success",
                                                                                         false => "",
                                                                                     };
                                                                                     let style_when_error = match header
                                                                                         .find(&value)
-                                                                                        .to_uppercase() == header.style_when_error.to_uppercase()
+                                                                                        .to_uppercase().contains(&header.style_when_error.to_uppercase()) && !header.style_when_error.is_empty()
                                                                                     {
                                                                                         true => "text-error",
                                                                                         false => "",
