@@ -80,7 +80,7 @@ pub fn DataTable(
                             {
                                 move || {
                                     download_resource.and_then(|d| {
-                                        match allow_download.get() {
+                                        match allow_download.get() && total.get().gt(&0u32){
                                             true => {
                                                 view! {
                                                     <DownloadCsvAnchor
