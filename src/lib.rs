@@ -172,15 +172,17 @@ pub fn DataTable(
                                                                                     }
                                                                                 }
                                                                                 {
-                                                                                    let number_style = match header
+                                                                                    let number_style = if header.is_number_styled {
+                                                                                        match header
                                                                                         .find(&value)
                                                                                         .parse::<f64>()
                                                                                         .ok()
-                                                                                    {
-                                                                                        Some(parsed_value) if parsed_value >= 0.0 => "text-success",
-                                                                                        Some(_) => "text-error",
-                                                                                        None => "",
-                                                                                    };
+                                                                                        {
+                                                                                            Some(parsed_value) if parsed_value >= 0.0 => "text-success",
+                                                                                            Some(_) => "text-error",
+                                                                                            None => "",
+                                                                                        }
+                                                                                    }else {""};
                                                                                     let style_when_success = match header
                                                                                         .find(&value)
                                                                                         .to_uppercase().contains(&header.style_when_success.to_uppercase()) && !header.style_when_success.is_empty()
