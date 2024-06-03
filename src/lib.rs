@@ -21,6 +21,7 @@ use serde_json::Value;
 /// * `allow_download` - allow download of the table data
 /// * `download_filename` - filename for the downloaded file
 /// * `download_resource` - resource for downloading the data
+/// * `key_to_display_in_mobile` - key to display in mobile view header
 #[allow(non_snake_case)]
 #[component]
 pub fn DataTable(
@@ -35,7 +36,8 @@ pub fn DataTable(
     current_page: RwSignal<u32>,
     allow_download: RwSignal<bool>,
     download_filename: RwSignal<String>,
-    download_resource: Resource<DownloadDataRequest, Result<String, ServerFnError>>
+    download_resource: Resource<DownloadDataRequest, Result<String, ServerFnError>>,
+    #[prop(optional)] key_to_display_in_mobile: RwSignal<String>
 ) -> impl IntoView {
     let pages_entries = RwSignal::new(vec![5, 10, 15, 20, 25, 50, 100]);
     view! {
@@ -118,7 +120,7 @@ pub fn DataTable(
             </div>
             <table class="table table-xs table-zebra-zebra mt-1">
                 <thead>
-                    <tr>
+                    <tr class = "hidden px924:contents">
 
                         {move || {
                             headers
@@ -154,86 +156,141 @@ pub fn DataTable(
                                         {
                                             data.get()
                                                 .into_iter()
-                                                .map(|value| {
+                                                .enumerate()
+                                                .map(|(index, value)| {
+                                                    let hide_per_cell = RwSignal::new(true);
+                                                    let key_to_display = key_to_display_in_mobile.get();
+                                                    let header_length = headers.get_untracked().len();
+
+                                                    let value_clone = value.clone();
+
+                                                    let header_display = value_clone.get(&key_to_display)
+                                                    .map(|value| value.to_string())
+                                                    .unwrap_or_else(|| "Click to show more...".to_string()).replace('"', "");
+
                                                     view! {
-                                                        <tr>
 
-                                                            {move || {
-                                                                headers
-                                                                    .get()
-                                                                    .into_iter()
-                                                                    .map(|header| {
-                                                                        view! {
-                                                                            <td>
-                                                                                {
-                                                                                    match header.prefix {
-                                                                                        Some(ref p) => view! { <span class="text-xs opacity-50 text-xs/3">{format!("{} ", p)}</span> }.into_view(),
-                                                                                        None => view! {}.into_view()
-                                                                                    }
-                                                                                }
-                                                                                {
-                                                                                    let number_style = if header.is_number_styled {
-                                                                                        match header
-                                                                                        .find(&value)
-                                                                                        .parse::<f64>()
-                                                                                        .ok()
-                                                                                        {
-                                                                                            Some(parsed_value) if parsed_value >= 0.0 => "text-success",
-                                                                                            Some(_) => "text-error",
-                                                                                            None => "",
+                                                        // =================== DESKTOP VIEW ===================
+                                                        <div class="hidden px924:contents">
+                                                            <tr class = { move || if index % 2 != 0 {"uppercase hover:opacity-50 bg-base-300"} else{"uppercase hover:opacity-50"}}>
+
+                                                                {move || {
+                                                                    headers
+                                                                        .get()
+                                                                        .into_iter()
+                                                                        .map(|header| {
+                                                                            view! {
+                                                                                <td>
+                                                                                    {
+                                                                                        match header.prefix {
+                                                                                            Some(ref p) => view! { <span class="text-xs opacity-50 text-xs/3">{format!("{} ", p)}</span> }.into_view(),
+                                                                                            None => view! {}.into_view()
                                                                                         }
-                                                                                    }else {""};
-                                                                                    let style_when_success = match header
-                                                                                        .find(&value)
-                                                                                        .to_uppercase().contains(&header.style_when_success.to_uppercase()) && !header.style_when_success.is_empty()
+                                                                                    }
                                                                                     {
-                                                                                        true => "text-success",
-                                                                                        false => "",
-                                                                                    };
-                                                                                    let style_when_error = match header
-                                                                                        .find(&value)
-                                                                                        .to_uppercase().contains(&header.style_when_error.to_uppercase()) && !header.style_when_error.is_empty()
-                                                                                    {
-                                                                                        true => "text-error",
-                                                                                        false => "",
-                                                                                    };
-                                                                                    let case_style = match header.to_uppercase {
-                                                                                        true => "uppercase",
-                                                                                        false => "",
-                                                                                    };
-                                                                                    let style = format!(
-                                                                                        "{} {} {} {}",
-                                                                                        number_style,
-                                                                                        style_when_success,
-                                                                                        style_when_error,
-                                                                                        case_style,
-                                                                                    );
-                                                                                    view! { <span class=style>{header.find(&value)}</span> }
-                                                                                }
-                                                                                {match header.is_currency {
-                                                                                    true => {
-                                                                                        let has_value = header.find(&value).parse::<f64>().is_ok();
-                                                                                        if has_value {
-                                                                                            view! {
-                                                                                                <span class="text-xs opacity-50 text-xs/3">
-                                                                                                    {format!(" {}", header.find_currency(&value))}
-                                                                                                </span>
+                                                                                        let number_style = if header.is_number_styled {
+                                                                                            match header
+                                                                                            .find(&value_clone)
+                                                                                            .parse::<f64>()
+                                                                                            .ok()
+                                                                                            {
+                                                                                                Some(parsed_value) if parsed_value >= 0.0 => "text-success",
+                                                                                                Some(_) => "text-error",
+                                                                                                None => "",
                                                                                             }
-                                                                                        }else{
-                                                                                            view! { <span></span> }
-                                                                                        }
-                                                                                        
+                                                                                        }else {""};
+                                                                                        let style_when_success = match header
+                                                                                            .find(&value_clone)
+                                                                                            .to_uppercase().contains(&header.style_when_success.to_uppercase()) && !header.style_when_success.is_empty()
+                                                                                        {
+                                                                                            true => "text-success",
+                                                                                            false => "",
+                                                                                        };
+                                                                                        let style_when_error = match header
+                                                                                            .find(&value_clone)
+                                                                                            .to_uppercase().contains(&header.style_when_error.to_uppercase()) && !header.style_when_error.is_empty()
+                                                                                        {
+                                                                                            true => "text-error",
+                                                                                            false => "",
+                                                                                        };
+                                                                                        let case_style = match header.to_uppercase {
+                                                                                            true => "uppercase",
+                                                                                            false => "",
+                                                                                        };
+                                                                                        let style = format!(
+                                                                                            "{} {} {} {}",
+                                                                                            number_style,
+                                                                                            style_when_success,
+                                                                                            style_when_error,
+                                                                                            case_style,
+                                                                                        );
+                                                                                        view! { <span class=style>{header.find(&value_clone)}</span> }
                                                                                     }
-                                                                                    false => view! { <span></span> },
-                                                                                }}
+                                                                                    {match header.is_currency {
+                                                                                        true => {
+                                                                                            let has_value = header.find(&value_clone).parse::<f64>().is_ok();
+                                                                                            if has_value {
+                                                                                                view! {
+                                                                                                    <span class="text-xs opacity-50 text-xs/3">
+                                                                                                        {format!(" {}", header.find_currency(&value_clone))}
+                                                                                                    </span>
+                                                                                                }
+                                                                                            }else{
+                                                                                                view! { <span></span> }
+                                                                                            }
+                                                                                            
+                                                                                        }
+                                                                                        false => view! { <span></span> },
+                                                                                    }}
 
-                                                                            </td>
-                                                                        }
-                                                                    })
-                                                                    .collect_view()
-                                                            }}
+                                                                                </td>
+                                                                            }
+                                                                        })
+                                                                        .collect_view()
+                                                                }}
 
+                                                            </tr>
+                                                        </div>
+
+                                                        // =================== MOBILE VIEW ===================
+
+                                                        <tr class = { move || if index % 2 != 0 {"px924:hidden bg-base-300"} else{"px924:hidden"}}>
+                                                            <td colspan = format!("{}", header_length)>
+                                                            {
+                                                                view! {
+                                                                    <button class = "flex justify-start w-full gap-2 border-l-2 rounded-none btn btn-ghost btn-md bg-base-100 border-l-success" on:click = move |_| hide_per_cell.update(|c| *c = !*c) >
+                                                                        <div class = "text-xs">
+                                                                            {&header_display}
+                                                                        </div>
+                                                                        <div class = "flex justify-end flex-1">
+                                                                            <Show when = move || hide_per_cell.get() >
+                                                                                <svg
+                                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                                    viewBox="0 0 20 20"
+                                                                                    fill="currentColor"
+                                                                                    class="w-4 h-4"
+                                                                                >
+                                                                                    <path
+                                                                                        fill-rule="evenodd"
+                                                                                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                                                                        clip-rule="evenodd"
+                                                                                    ></path>
+                                                                                </svg>
+                                                                            </Show>
+                                                                        </div>
+                                                                    </button>
+                                                                }.into_view()
+                                                            }
+                                                            </td>
                                                         </tr>
+
+                                                        <TableRowMobile 
+                                                            headers 
+                                                            hide_per_cell 
+                                                            value
+                                                            index 
+                                                            header_length
+                                                        />
                                                     }
                                                 })
                                                 .collect_view()
@@ -309,6 +366,92 @@ fn TableRow(sort_by: RwSignal<String>, header: RwSignal<TableHeader>, sort: RwSi
         >
             {move || header.get().display_name}
         </th>
+    }
+}
+
+#[allow(non_snake_case)]
+#[component]
+fn TableRowMobile(headers: RwSignal<Vec<TableHeader>>, hide_per_cell: RwSignal<bool>, value: Value, index: usize, header_length: usize) -> impl IntoView {
+    view! {
+        {move || {
+            headers
+            .get()
+            .into_iter()
+            .map(|header| {
+                view! {
+                    <tr prop:hidden = move || hide_per_cell.get() class = { move || if index % 2 != 0 {"uppercase hover:opacity-50 bg-base-300"} else{"uppercase hover:opacity-50"}}>
+                        <td colspan = {format!("{}", header_length)} class="px924:hidden">
+                            {
+                                match header.prefix {
+                                    Some(ref p) => view! { <span class="text-xs opacity-50 text-xs/3">{format!("{} ", p)}</span> }.into_view(),
+                                    None => view! {}.into_view()
+                                }
+                            }
+                            {
+                                let number_style = if header.is_number_styled {
+                                    match header
+                                    .find(&value)
+                                    .parse::<f64>()
+                                    .ok()
+                                    {
+                                        Some(parsed_value) if parsed_value >= 0.0 => "text-success",
+                                        Some(_) => "text-error",
+                                        None => "",
+                                    }
+                                }else {""};
+                                let style_when_success = match header
+                                    .find(&value)
+                                    .to_uppercase().contains(&header.style_when_success.to_uppercase()) && !header.style_when_success.is_empty()
+                                {
+                                    true => "text-success",
+                                    false => "",
+                                };
+                                let style_when_error = match header
+                                    .find(&value)
+                                    .to_uppercase().contains(&header.style_when_error.to_uppercase()) && !header.style_when_error.is_empty()
+                                {
+                                    true => "text-error",
+                                    false => "",
+                                };
+                                let case_style = match header.to_uppercase {
+                                    true => "uppercase",
+                                    false => "",
+                                };
+                                let style = format!(
+                                    "px924:hidden {} {} {} {}",
+                                    number_style,
+                                    style_when_success,
+                                    style_when_error,
+                                    case_style,
+                                );
+                                view! { 
+                                    <span class="mr-2 text-sm text-success px924:hidden">{ header.display_name.clone() }: </span>
+                                    <span class=style>{header.find(&value)}</span> 
+                                }
+                            }
+                            {match header.is_currency {
+                                true => {
+                                    let has_value = header.find(&value).parse::<f64>().is_ok();
+                                    if has_value {
+                                        view! {
+                                            <span class="px924:hidden text-xs opacity-50 text-xs/3">
+                                                {format!(" {}", header.find_currency(&value))}
+                                            </span>
+                                        }
+                                    }else{
+                                        view! { <span></span> }
+                                    }
+                                    
+                                }
+                                false => view! { <span></span> },
+                            }}
+
+                        </td>
+                    </tr>
+                }
+            })
+            .collect_view()
+        }}
     }
 }
 
